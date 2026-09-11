@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maison Noir — Book Your Hair Experience</title>
+<meta name="description" content="Book, join, and glow — the Maison Noir hair salon app.">
+
+<!--
+=====================================================================
+  CONFIG — edit these values to rebrand this file for any salon.
+  Nothing below this block needs to change for a standard rebrand.
+=====================================================================
+-->
+<script>
+  const CONFIG = {
+    salonName: "Maison Noir",
+    tagline: "Hair, held to a higher standard.",
+    city: "Bloemfontein",
+    address: "14 Kellner Street, Westdene, Bloemfontein",
+    phoneDisplay: "051 000 0000",
+    whatsappNumber: "27825550123", // international format, no + or leading 0
+    instagramHandle: "@maisonnoir.hair",
+    mapEmbedUrl: "https://www.google.com/maps?q=Westdene+Bloemfontein&output=embed",
+    accentGold: "#B08D57",
+    accentWine: "#5C1A2B",
+    ink: "#171013",
+    paper: "#F6F0E8",
+    hours: [
+      ["Mon – Fri", "08:00 – 18:00"],
+      ["Saturday", "08:00 – 15:00"],
+      ["Sunday", "Closed"]
+    ],
+    stylists: [
+      { name: "Lerato M.", role: "Senior Colourist", bio: "Balayage and correction specialist, 11 years behind the chair." },
+      { name: "Aiden P.", role: "Creative Director", bio: "Precision cutting, editorial finishes." },
+      { name: "Naledi K.", role: "Texture Specialist", bio: "Curl and coil health, protective styling." }
+    ],
+    services: [
+      { id: "cut", name: "Signature Cut & Style", duration: "45 min", price: 450 },
+      { id: "blow", name: "Wash & Blow Dry", duration: "40 min", price: 320 },
+      { id: "colour", name: "Full Colour", duration: "2.5 hr", price: 1450 },
+      { id: "balayage", name: "Balayage", duration: "3 hr", price: 2100 },
+      { id: "treatment", name: "Repair Treatment", duration: "50 min", price: 580 },
+      { id: "updo", name: "Occasion Styling", duration: "1 hr", price: 650 }
+    ],
+    memberships: [
+      {
+        name: "Essential",
+        price: 449,
+        period: "/month",
+        features: ["Monthly wash & blow dry", "Priority booking slots", "10% off retail products"]
+      },
+      {
+        name: "Premium",
+        price: 899,
+        period: "/month",
+        features: ["Monthly treatment + blow dry", "Priority booking", "15% off retail & services", "Free occasion styling, 1x/yr"],
+        featured: true
+      },
+      {
+        name: "VIP Transformation",
+        price: 1650,
+        period: "/month",
+        features: ["Monthly colour maintenance", "Quarterly treatment intensive", "Personal consultation", "20% off everything", "First access to new stylists"]
+      }
+    ],
+    testimonials: [
+      { quote: "Booked at 11pm on a Tuesday, was in the chair by Thursday morning. Never going back to phone tag.", name: "Refilwe D." },
+      { quote: "The membership pays for itself in the product discount alone. My hair has never been this consistent.", name: "Chantelle B." },
+      { quote: "Aiden actually listens before he cuts. First salon where I haven't had to explain myself twice.", name: "Michael T." }
+    ]
+  };
+</script>
+
+<style>
+  :root{
+    --ink: #171013;
+    --paper: #F6F0E8;
+    --paper-dim: #EDE4D6;
+    --gold: #B08D57;
+    --gold-soft: #D9C6A5;
+    --wine: #5C1A2B;
+    --line: rgba(23,16,19,0.12);
+    --radius: 2px;
+  }
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+  h1,h2,h3{ font-family: "Cormorant Garamond", Georgia, serif; font-weight:500; margin:0; letter-spacing:0.01em; }
+  p, a, button, input, select{ font-family: "Work Sans", -apple-system, sans-serif; }
+  a{ color:inherit; }
+  img{ max-width:100%; display:block; }
+  button{ cursor:pointer; font:inherit; border:none; background:none; color:inherit; }
+  :focus-visible{ outline: 2px solid var(--gold); outline-offset: 3px; }
+
+  .wrap{ max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Nav ---------- */
+  nav{
+    position: sticky; top:0; z-index: 50;
+    background: rgba(23,16,19,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(246,240,232,0.08);
+  }
+  nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:64px; }
+  .brand{ font-size: 1.3rem; letter-spacing: 0.04em; }
+  .brand em{ font-style: normal; color: var(--gold-soft); }
+  .nav-links{ display:none; gap: 28px; font-size: 0.95rem; font-family:"Work Sans",sans-serif; }
+  @media(min-width:760px){ .nav-links{ display:flex; } }
+  .nav-links a{ opacity:0.8; text-decoration:none; }
+  .nav-links a:hover{ opacity:1; }
+  .btn-book-nav{
+    font-family:"Work Sans",sans-serif; font-size:0.85rem; letter-spacing:0.03em;
+    background: var(--gold); color: var(--ink); padding: 10px 20px; border-radius: var(--radius);
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    min-height: 88vh;
+    display:flex; align-items:flex-end;
+    padding-bottom: 64px;
+    background:
+      linear-gradient(180deg, rgba(23,16,19,0.15) 0%, rgba(23,16,19,0.55) 55%, var(--ink) 100%),
+      radial-gradient(120% 90% at 15% 0%, #2b1a20 0%, var(--ink) 60%);
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image: url('https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1600&auto=format&fit=crop');
+    background-size:cover; background-position: center 20%;
+    opacity: 0.45;
+    mix-blend-mode: luminosity;
+  }
+  .hero-content{ position:relative; z-index:2; }
+  .eyebrow{ font-family:"Work Sans",sans-serif; font-size:0.78rem; letter-spacing:0.14em; color: var(--gold-soft); margin-bottom:18px; }
+  .hero h1{ font-size: clamp(2.6rem, 7vw, 4.6rem); line-height: 1.02; max-width: 11ch; }
+  .hero p.sub{ font-family:"Work Sans",sans-serif; font-size:1.05rem; max-width:42ch; opacity:0.82; margin-top:20px; line-height:1.6; }
+  .hero-actions{ display:flex; gap:16px; margin-top:34px; flex-wrap:wrap; }
+
+  .btn-primary{
+    font-family:"Work Sans",sans-serif; font-size:0.92rem; letter-spacing:0.02em;
+    background: var(--gold); color: var(--ink); padding: 16px 30px; border-radius: var(--radius);
+    transition: transform 0.15s ease;
+  }
+  .btn-primary:hover{ transform: translateY(-2px); }
+  .btn-ghost{
+    font-family:"Work Sans",sans-serif; font-size:0.92rem;
+    border: 1px solid rgba(246,240,232,0.35); padding: 15px 28px; border-radius: var(--radius);
+  }
+
+  /* ---------- Sections generic ---------- */
+  section{ padding: 96px 0; }
+  .section-head{ margin-bottom: 52px; max-width: 60ch; }
+  .section-head .eyebrow{ margin-bottom:14px; }
+  .section-head h2{ font-size: clamp(1.9rem, 4vw, 2.7rem); }
+  .section-head p{ font-family:"Work Sans",sans-serif; opacity:0.72; margin-top:14px; line-height:1.65; font-size:0.98rem; }
+  .on-paper{ background: var(--paper); color: var(--ink); }
+  .on-paper .eyebrow{ color: var(--wine); }
+
+  /* ---------- Services ---------- */
+  .service-list{ border-top:1px solid var(--line); }
+  .service-row{
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    padding: 22px 0; border-bottom:1px solid var(--line);
+  }
+  .service-row .name{ font-size:1.25rem; }
+  .service-row .meta{ font-family:"Work Sans",sans-serif; font-size:0.82rem; opacity:0.6; margin-top:4px; }
+  .service-row .price{ font-family:"Work Sans",sans-serif; font-size:1rem; white-space:nowrap; }
+  .service-row .add{
+    font-family:"Work Sans",sans-serif; font-size:0.8rem; border:1px solid var(--wine); color:var(--wine);
+    padding:8px 16px; border-radius:var(--radius); white-space:nowrap;
+  }
+  .service-row .add[aria-pressed="true"]{ background:var(--wine); color:var(--paper); }
+  .service-right{ display:flex; align-items:center; gap:16px; }
+
+  /* ---------- Stylists ---------- */
+  .stylist-grid{ display:grid; grid-template-columns: 1fr; gap: 28px; }
+  @media(min-width:700px){ .stylist-grid{ grid-template-columns: repeat(3,1fr); } }
+  .stylist-card{ border:1px solid rgba(246,240,232,0.14); padding:26px; }
+  .stylist-card .role{ font-family:"Work Sans",sans-serif; font-size:0.78rem; letter-spacing:0.06em; color:var(--gold-soft); margin:6px 0 12px; }
+  .stylist-card p{ font-size:0.92rem; opacity:0.75; line-height:1.55; }
+
+  /* ---------- Memberships ---------- */
+  .member-grid{ display:grid; grid-template-columns:1fr; gap:24px; }
+  @media(min-width:800px){ .member-grid{ grid-template-columns: repeat(3,1fr); align-items:stretch; } }
+  .member-card{
+    border:1px solid var(--line); padding:32px 28px; display:flex; flex-direction:column;
+    background: rgba(246,240,232,0.03);
+  }
+  .member-card.featured{ border-color: var(--gold); background: rgba(176,141,87,0.08); }
+  .member-card .tag{ font-family:"Work Sans",sans-serif; font-size:0.72rem; letter-spacing:0.1em; color:var(--gold-soft); margin-bottom:10px; }
+  .member-card .price{ font-size:2.4rem; margin:10px 0 2px; }
+  .member-card .price span{ font-family:"Work Sans",sans-serif; font-size:0.9rem; opacity:0.6; }
+  .member-card ul{ list-style:none; padding:0; margin:22px 0 28px; font-family:"Work Sans",sans-serif; font-size:0.88rem; }
+  .member-card li{ padding:8px 0; border-top:1px solid rgba(246,240,232,0.1); opacity:0.85; }
+  .member-card .join{
+    margin-top:auto; text-align:center; font-family:"Work Sans",sans-serif; font-size:0.85rem;
+    padding:13px; border:1px solid var(--gold); border-radius:var(--radius);
+  }
+  .member-card.featured .join{ background:var(--gold); color:var(--ink); }
+
+  /* ---------- AI assistant ---------- */
+  .ai-panel{
+    display:grid; grid-template-columns:1fr; gap:0;
+    border:1px solid var(--line); background: rgba(246,240,232,0.03);
+  }
+  @media(min-width:800px){ .ai-panel{ grid-template-columns: 1fr 1.3fr; } }
+  .ai-blurb{ padding:36px; border-bottom:1px solid var(--line); }
+  @media(min-width:800px){ .ai-blurb{ border-bottom:none; border-right:1px solid var(--line); } }
+  .ai-blurb h3{ font-size:1.6rem; margin-bottom:14px; }
+  .ai-blurb p{ font-family:"Work Sans",sans-serif; font-size:0.92rem; opacity:0.72; line-height:1.6; }
+  .ai-blurb ul{ font-family:"Work Sans",sans-serif; font-size:0.85rem; opacity:0.8; padding-left:18px; margin-top:18px; line-height:1.9; }
+  .chat{ display:flex; flex-direction:column; height:420px; }
+  .chat-log{ flex:1; overflow-y:auto; padding:24px; display:flex; flex-direction:column; gap:12px; }
+  .msg{ font-family:"Work Sans",sans-serif; font-size:0.9rem; line-height:1.5; max-width:80%; padding:11px 15px; border-radius:12px; }
+  .msg.bot{ background: rgba(246,240,232,0.08); align-self:flex-start; border-bottom-left-radius:2px; }
+  .msg.user{ background: var(--gold); color:var(--ink); align-self:flex-end; border-bottom-right-radius:2px; }
+  .chat-quick{ display:flex; gap:8px; flex-wrap:wrap; padding: 0 24px 14px; }
+  .chip{ font-family:"Work Sans",sans-serif; font-size:0.78rem; border:1px solid var(--line); padding:7px 13px; border-radius:20px; opacity:0.85; }
+  .chip:hover{ border-color:var(--gold); }
+  .chat-input{ display:flex; border-top:1px solid var(--line); }
+  .chat-input input{
+    flex:1; background:transparent; border:none; color:var(--paper); padding:16px 20px; font-size:0.92rem;
+  }
+  .chat-input input::placeholder{ color: rgba(246,240,232,0.4); }
+  .chat-input button{ padding:0 22px; color: var(--gold); font-family:"Work Sans",sans-serif; font-size:0.85rem; }
+
+  /* ---------- Gallery / testimonials ---------- */
+  .gallery{ display:grid; grid-template-columns: repeat(2,1fr); gap:4px; }
+  @media(min-width:700px){ .gallery{ grid-template-columns: repeat(4,1fr); } }
+  .gallery img{ width:100%; height: 260px; object-fit:cover; filter: grayscale(15%); }
+
+  .testi-grid{ display:grid; grid-template-columns:1fr; gap:24px; }
+  @media(min-width:800px){ .testi-grid{ grid-template-columns: repeat(3,1fr); } }
+  .testi-card{ padding:26px; border:1px solid var(--line); }
+  .testi-card p.quote{ font-size:1.15rem; line-height:1.5; margin-bottom:16px; }
+  .testi-card .name{ font-family:"Work Sans",sans-serif; font-size:0.8rem; opacity:0.6; }
+
+  /* ---------- FAQ ---------- */
+  .faq-item{ border-bottom:1px solid var(--line); }
+  .faq-item summary{
+    padding:20px 0; font-size:1.15rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center;
+    list-style:none;
+  }
+  .faq-item summary::-webkit-details-marker{ display:none; }
+  .faq-item summary::after{ content:"+"; font-size:1.4rem; color:var(--gold); }
+  .faq-item[open] summary::after{ content:"–"; }
+  .faq-item p{ font-family:"Work Sans",sans-serif; font-size:0.92rem; opacity:0.7; padding-bottom:20px; line-height:1.6; max-width: 62ch; }
+
+  /* ---------- Footer / contact ---------- */
+  footer{ background: var(--paper); color: var(--ink); padding-top:80px; }
+  .contact-grid{ display:grid; grid-template-columns:1fr; gap:40px; }
+  @media(min-width:800px){ .contact-grid{ grid-template-columns: 1fr 1fr; } }
+  .hours-row{ display:flex; justify-content:space-between; font-family:"Work Sans",sans-serif; font-size:0.92rem; padding:10px 0; border-bottom:1px solid var(--line); }
+  .map-frame{ border:none; width:100%; height:280px; filter: grayscale(30%); }
+  .foot-bottom{ margin-top:60px; border-top:1px solid var(--line); padding:26px 0; font-family:"Work Sans",sans-serif; font-size:0.8rem; opacity:0.6; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+
+  /* ---------- Floating WhatsApp ---------- */
+  .wa-float{
+    position:fixed; bottom:22px; right:22px; z-index:60;
+    width:56px; height:56px; border-radius:50%; background:#25D366;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  }
+  .wa-float svg{ width:28px; height:28px; }
+
+  /* ---------- Sticky book bar (mobile) ---------- */
+  .sticky-book{
+    position:fixed; left:0; right:0; bottom:0; z-index:55;
+    background: var(--ink); border-top:1px solid rgba(246,240,232,0.15);
+    padding:12px 16px; display:flex; gap:10px;
+  }
+  @media(min-width:760px){ .sticky-book{ display:none; } }
+  .sticky-book button{ flex:1; padding:13px; font-family:"Work Sans",sans-serif; font-size:0.9rem; border-radius:var(--radius); }
+  .sticky-book .primary{ background:var(--gold); color:var(--ink); }
+  .sticky-book .secondary{ border:1px solid rgba(246,240,232,0.3); }
+  body{ padding-bottom: 74px; }
+  @media(min-width:760px){ body{ padding-bottom:0; } }
+
+  /* ---------- Booking modal ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:100;
+    display:none; align-items:flex-end; justify-content:center;
+  }
+  @media(min-width:700px){ .modal-overlay{ align-items:center; } }
+  .modal-overlay.open{ display:flex; }
+  .modal{
+    background: var(--paper); color:var(--ink); width:100%; max-width:520px;
+    max-height:88vh; overflow-y:auto; border-radius: 10px 10px 0 0;
+    padding: 28px 24px 32px;
+  }
+  @media(min-width:700px){ .modal{ border-radius:10px; } }
+  .modal-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .modal-head h3{ font-size:1.5rem; }
+  .modal-close{ font-size:1.4rem; opacity:0.5; }
+  .modal .step-label{ font-family:"Work Sans",sans-serif; font-size:0.78rem; letter-spacing:0.08em; opacity:0.5; margin-bottom:18px; }
+  .field{ margin-bottom:18px; }
+  .field label{ display:block; font-family:"Work Sans",sans-serif; font-size:0.8rem; margin-bottom:7px; opacity:0.65; }
+  .field input, .field select{
+    width:100%; padding:13px 14px; border:1px solid var(--line); border-radius:6px; font-family:"Work Sans",sans-serif; font-size:0.95rem; background:#fff;
+  }
+  .pill-select{ display:flex; flex-wrap:wrap; gap:8px; }
+  .pill{
+    font-family:"Work Sans",sans-serif; font-size:0.85rem; padding:9px 15px; border:1px solid var(--line); border-radius:20px;
+  }
+  .pill[aria-pressed="true"]{ background:var(--wine); color:#fff; border-color:var(--wine); }
+  .modal-summary{ background:rgba(92,26,43,0.06); padding:16px; border-radius:8px; font-family:"Work Sans",sans-serif; font-size:0.88rem; margin:20px 0; line-height:1.7; }
+  .modal-actions{ display:flex; gap:12px; margin-top:8px; }
+  .modal-actions button{ flex:1; padding:15px; border-radius:6px; font-family:"Work Sans",sans-serif; font-size:0.92rem; }
+  .modal-actions .back{ border:1px solid var(--line); }
+  .modal-actions .next{ background:var(--wine); color:#fff; }
+  .modal-actions .next[disabled]{ opacity:0.4; }
+  .step{ display:none; }
+  .step.active{ display:block; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand" id="brand-name"><em>M</em>aison Noir</div>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#stylists">Stylists</a>
+      <a href="#membership">Membership</a>
+      <a href="#assistant">Ask Us</a>
+      <a href="#visit">Visit</a>
+    </div>
+    <button class="btn-book-nav" onclick="openBooking()">Book now</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-content">
+    <div class="eyebrow" id="hero-eyebrow">BLOEMFONTEIN'S HAIR ATELIER</div>
+    <h1 id="hero-headline">Hair, held to a<br>higher standard.</h1>
+    <p class="sub" id="hero-sub">Book any hour of the day, join a membership that keeps your colour perfect year-round, or ask our stylists a question before you commit.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="openBooking()">Book an appointment</button>
+      <a class="btn-ghost" href="#membership">See memberships</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ SERVICES ============ -->
+<section id="services">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">SERVICES & PRICING</div>
+      <h2>Know the price before you sit down.</h2>
+      <p>Every service below can be booked directly — pick as many as you like and we'll carry them into your appointment request.</p>
+    </div>
+    <div class="service-list" id="service-list"></div>
+  </div>
+</section>
+
+<!-- ============ STYLISTS ============ -->
+<section id="stylists" class="on-paper">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">MEET THE TEAM</div>
+      <h2>Three chairs, three specialities.</h2>
+    </div>
+    <div class="stylist-grid" id="stylist-grid"></div>
+  </div>
+</section>
+
+<!-- ============ MEMBERSHIP ============ -->
+<section id="membership">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">HEALTHY HAIR MEMBERSHIP CLUB</div>
+      <h2>Recurring care, not recurring rebooking.</h2>
+      <p>Members skip the booking queue, keep colour and treatments on schedule automatically, and save on every visit.</p>
+    </div>
+    <div class="member-grid" id="member-grid"></div>
+  </div>
+</section>
+
+<!-- ============ AI ASSISTANT ============ -->
+<section id="assistant" class="on-paper">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">YOUR PERSONAL HAIR EXPERT</div>
+      <h2>Ask before you book.</h2>
+      <p>Colour gone wrong, not sure which service you need, or wondering what to do before a big event — ask here, any hour.</p>
+    </div>
+    <div class="ai-panel">
+      <div class="ai-blurb">
+        <h3>What it can help with</h3>
+        <p>A first line of advice, staffed by the salon's own guidance — not a replacement for your stylist, but a fast answer while you decide what to book.</p>
+        <ul>
+          <li>Hair emergencies & aftercare</li>
+          <li>Colour questions</li>
+          <li>Which service fits your hair</li>
+          <li>Product recommendations</li>
+        </ul>
+      </div>
+      <div class="chat">
+        <div class="chat-log" id="chat-log">
+          <div class="msg bot">Hi, I'm the Maison Noir Hair Expert. Tell me what's going on with your hair, or tap a question below.</div>
+        </div>
+        <div class="chat-quick">
+          <button class="chip" onclick="askQuick('My colour turned out too dark')">Colour too dark</button>
+          <button class="chip" onclick="askQuick('Which service do I need for dry, damaged hair?')">Dry, damaged hair</button>
+          <button class="chip" onclick="askQuick('What should I do before a wedding?')">Wedding prep</button>
+        </div>
+        <form class="chat-input" id="chat-form">
+          <input type="text" id="chat-text" placeholder="Type your question..." autocomplete="off">
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GALLERY ============ -->
+<section id="gallery" style="padding-top:0;">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">RECENT WORK</div>
+      <h2>From the chair.</h2>
+    </div>
+  </div>
+  <div class="gallery">
+    <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=600&auto=format&fit=crop" alt="Balayage result" loading="lazy">
+    <img src="https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?q=80&w=600&auto=format&fit=crop" alt="Salon styling" loading="lazy">
+    <img src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?q=80&w=600&auto=format&fit=crop" alt="Haircut finish" loading="lazy">
+    <img src="https://images.unsplash.com/photo-1519699047748-de8e457a634e?q=80&w=600&auto=format&fit=crop" alt="Colour work" loading="lazy">
+  </div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section id="testimonials" class="on-paper">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">CLIENT WORDS</div>
+      <h2>What keeps clients coming back.</h2>
+    </div>
+    <div class="testi-grid" id="testi-grid"></div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq">
+  <div class="wrap" style="max-width:760px;">
+    <div class="section-head">
+      <div class="eyebrow">GOOD TO KNOW</div>
+      <h2>Frequently asked.</h2>
+    </div>
+    <details class="faq-item" open>
+      <summary>How far ahead can I book?</summary>
+      <p>Up to 8 weeks out. Popular stylists and Saturday slots go quickly, so members get first access.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Can I cancel or reschedule?</summary>
+      <p>Yes — message us on WhatsApp at least 24 hours before your slot and we'll move it, no charge.</p>
+    </details>
+    <details class="faq-item">
+      <summary>How does the membership billing work?</summary>
+      <p>Memberships renew monthly. You can pause or cancel any time by messaging the salon directly.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Do you take walk-ins?</summary>
+      <p>Limited walk-in slots are available Tuesday–Thursday. Booking ahead guarantees your stylist and time.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ============ CONTACT / FOOTER ============ -->
+<footer id="visit">
+  <div class="wrap">
+    <div class="contact-grid">
+      <div>
+        <div class="eyebrow">VISIT</div>
+        <h2 style="font-size:1.8rem; margin:12px 0 20px;" id="footer-address"></h2>
+        <div id="hours-list"></div>
+        <div style="margin-top:26px; font-family:'Work Sans',sans-serif; font-size:0.92rem;">
+          <div id="footer-phone"></div>
+          <div id="footer-insta" style="margin-top:6px;"></div>
+        </div>
+      </div>
+      <iframe class="map-frame" id="map-frame" loading="lazy" allowfullscreen></iframe>
+    </div>
+    <div class="foot-bottom">
+      <span id="footer-copy"></span>
+      <span>Built for independent salons.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ FLOATING WHATSAPP ============ -->
+<a class="wa-float" id="wa-float" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 32 32" fill="#fff"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.34.653 4.527 1.786 6.393L4 29l7.81-1.746A11.94 11.94 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.6c-1.94 0-3.75-.57-5.27-1.55l-.378-.235-4.634 1.036 1.02-4.51-.246-.39A9.56 9.56 0 0 1 5.4 15c0-5.845 4.756-10.6 10.601-10.6S26.6 9.155 26.6 15 21.846 24.6 16.001 24.6zm5.84-7.94c-.32-.16-1.887-.93-2.18-1.037-.293-.107-.506-.16-.72.16-.213.32-.826 1.037-1.013 1.25-.187.213-.373.24-.693.08-.32-.16-1.352-.499-2.575-1.591-.952-.85-1.595-1.898-1.782-2.218-.187-.32-.02-.493.14-.653.144-.144.32-.373.48-.56.16-.187.213-.32.32-.533.107-.213.053-.4-.027-.56-.08-.16-.72-1.735-.987-2.377-.26-.625-.524-.54-.72-.55-.187-.008-.4-.01-.613-.01a1.18 1.18 0 0 0-.853.4c-.293.32-1.12 1.094-1.12 2.668s1.147 3.094 1.307 3.307c.16.213 2.257 3.446 5.467 4.832.764.33 1.36.527 1.825.674.767.244 1.465.21 2.017.127.615-.092 1.887-.771 2.153-1.516.267-.744.267-1.383.187-1.516-.08-.133-.293-.213-.613-.373z"/></svg>
+</a>
+
+<!-- ============ STICKY MOBILE BOOK BAR ============ -->
+<div class="sticky-book">
+  <button class="secondary" onclick="document.getElementById('wa-float').click()">Ask a question</button>
+  <button class="primary" onclick="openBooking()">Book now</button>
+</div>
+
+<!-- ============ BOOKING MODAL ============ -->
+<div class="modal-overlay" id="booking-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Book your visit</h3>
+      <button class="modal-close" onclick="closeBooking()">&times;</button>
+    </div>
+
+    <div class="step active" data-step="1">
+      <div class="step-label">STEP 1 OF 4 — SERVICE</div>
+      <div class="pill-select" id="modal-service-pills"></div>
+      <div class="modal-actions"><button class="next" onclick="goStep(2)">Continue</button></div>
+    </div>
+
+    <div class="step" data-step="2">
+      <div class="step-label">STEP 2 OF 4 — STYLIST</div>
+      <div class="pill-select" id="modal-stylist-pills"></div>
+      <div class="modal-actions">
+        <button class="back" onclick="goStep(1)">Back</button>
+        <button class="next" onclick="goStep(3)">Continue</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="3">
+      <div class="step-label">STEP 3 OF 4 — DATE & TIME</div>
+      <div class="field">
+        <label for="book-date">Preferred date</label>
+        <input type="date" id="book-date">
+      </div>
+      <div class="field">
+        <label>Preferred time</label>
+        <div class="pill-select" id="modal-time-pills"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="back" onclick="goStep(2)">Back</button>
+        <button class="next" onclick="goStep(4)">Continue</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="4">
+      <div class="step-label">STEP 4 OF 4 — YOUR DETAILS</div>
+      <div class="field">
+        <label for="book-name">Full name</label>
+        <input type="text" id="book-name" placeholder="Your name">
+      </div>
+      <div class="modal-summary" id="modal-summary"></div>
+      <div class="modal-actions">
+        <button class="back" onclick="goStep(3)">Back</button>
+        <button class="next" id="confirm-btn" onclick="sendBooking()">Confirm on WhatsApp</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   Populate content from CONFIG
+===================================================================== */
+document.title = CONFIG.salonName + " — Book Your Hair Experience";
+document.getElementById('brand-name').innerHTML = '<em>' + CONFIG.salonName.charAt(0) + '</em>' + CONFIG.salonName.slice(1);
+document.getElementById('hero-headline').innerHTML = CONFIG.tagline.replace(', ', ',<br>');
+document.getElementById('footer-address').textContent = CONFIG.address;
+document.getElementById('footer-phone').textContent = CONFIG.phoneDisplay;
+document.getElementById('footer-insta').textContent = CONFIG.instagramHandle;
+document.getElementById('footer-copy').textContent = '© ' + new Date().getFullYear() + ' ' + CONFIG.salonName;
+document.getElementById('map-frame').src = CONFIG.mapEmbedUrl;
+document.getElementById('wa-float').href = waLink("Hi " + CONFIG.salonName + "! I have a question.");
+
+const hoursList = document.getElementById('hours-list');
+CONFIG.hours.forEach(([d,h]) => {
+  const row = document.createElement('div');
+  row.className = 'hours-row';
+  row.innerHTML = `<span>${d}</span><span>${h}</span>`;
+  hoursList.appendChild(row);
+});
+
+const serviceList = document.getElementById('service-list');
+CONFIG.services.forEach(s => {
+  const row = document.createElement('div');
+  row.className = 'service-row';
+  row.innerHTML = `
+    <div>
+      <div class="name">${s.name}</div>
+      <div class="meta">${s.duration}</div>
+    </div>
+    <div class="service-right">
+      <div class="price">R${s.price}</div>
+    </div>`;
+  serviceList.appendChild(row);
+});
+
+const stylistGrid = document.getElementById('stylist-grid');
+CONFIG.stylists.forEach(st => {
+  const card = document.createElement('div');
+  card.className = 'stylist-card';
+  card.innerHTML = `<h3>${st.name}</h3><div class="role">${st.role}</div><p>${st.bio}</p>`;
+  stylistGrid.appendChild(card);
+});
+
+const memberGrid = document.getElementById('member-grid');
+CONFIG.memberships.forEach(m => {
+  const card = document.createElement('div');
+  card.className = 'member-card' + (m.featured ? ' featured' : '');
+  card.innerHTML = `
+    ${m.featured ? '<div class="tag">MOST POPULAR</div>' : '<div class="tag">&nbsp;</div>'}
+    <h3>${m.name}</h3>
+    <div class="price">R${m.price}<span>${m.period}</span></div>
+    <ul>${m.features.map(f => `<li>${f}</li>`).join('')}</ul>
+    <a class="join" href="${waLink('Hi, I\\'d like to join the ' + m.name + ' membership at ' + CONFIG.salonName + '.')}" target="_blank" rel="noopener">Join via WhatsApp</a>
+  `;
+  memberGrid.appendChild(card);
+});
+
+const testiGrid = document.getElementById('testi-grid');
+CONFIG.testimonials.forEach(t => {
+  const card = document.createElement('div');
+  card.className = 'testi-card';
+  card.innerHTML = `<p class="quote">"${t.quote}"</p><div class="name">${t.name}</div>`;
+  testiGrid.appendChild(card);
+});
+
+function waLink(message){
+  return `https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`;
+}
+
+/* =====================================================================
+   Booking modal logic
+===================================================================== */
+let bookingState = { services: [], stylist: null, time: null };
+
+function openBooking(){
+  document.getElementById('booking-overlay').classList.add('open');
+  renderModalPills();
+  goStep(1);
+}
+function closeBooking(){
+  document.getElementById('booking-overlay').classList.remove('open');
+}
+
+function renderModalPills(){
+  const svcWrap = document.getElementById('modal-service-pills');
+  svcWrap.innerHTML = '';
+  CONFIG.services.forEach(s => {
+    const p = document.createElement('button');
+    p.className = 'pill'; p.type = 'button';
+    p.setAttribute('aria-pressed', bookingState.services.includes(s.id));
+    p.textContent = `${s.name} — R${s.price}`;
+    p.onclick = () => {
+      const idx = bookingState.services.indexOf(s.id);
+      if(idx > -1) bookingState.services.splice(idx,1); else bookingState.services.push(s.id);
+      renderModalPills();
+    };
+    svcWrap.appendChild(p);
+  });
+
+  const stWrap = document.getElementById('modal-stylist-pills');
+  stWrap.innerHTML = '';
+  const noPref = document.createElement('button');
+  noPref.className='pill'; noPref.type='button';
+  noPref.setAttribute('aria-pressed', bookingState.stylist === 'No preference');
+  noPref.textContent = 'No preference';
+  noPref.onclick = () => { bookingState.stylist = 'No preference'; renderModalPills(); };
+  stWrap.appendChild(noPref);
+  CONFIG.stylists.forEach(st => {
+    const p = document.createElement('button');
+    p.className = 'pill'; p.type = 'button';
+    p.setAttribute('aria-pressed', bookingState.stylist === st.name);
+    p.textContent = st.name;
+    p.onclick = () => { bookingState.stylist = st.name; renderModalPills(); };
+    stWrap.appendChild(p);
+  });
+
+  const timeWrap = document.getElementById('modal-time-pills');
+  timeWrap.innerHTML = '';
+  ['09:00','11:00','13:00','15:00','17:00'].forEach(t => {
+    const p = document.createElement('button');
+    p.className = 'pill'; p.type = 'button';
+    p.setAttribute('aria-pressed', bookingState.time === t);
+    p.textContent = t;
+    p.onclick = () => { bookingState.time = t; renderModalPills(); };
+    timeWrap.appendChild(p);
+  });
+}
+
+function goStep(n){
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.querySelector(`.step[data-step="${n}"]`).classList.add('active');
+  if(n === 4) updateSummary();
+}
+
+function updateSummary(){
+  const svcNames = bookingState.services.map(id => CONFIG.services.find(s=>s.id===id)?.name).filter(Boolean);
+  const date = document.getElementById('book-date').value || '(no date chosen)';
+  document.getElementById('modal-summary').innerHTML = `
+    <strong>Services:</strong> ${svcNames.join(', ') || '(none selected)'}<br>
+    <strong>Stylist:</strong> ${bookingState.stylist || '(none selected)'}<br>
+    <strong>Date:</strong> ${date}<br>
+    <strong>Time:</strong> ${bookingState.time || '(none selected)'}
+  `;
+}
+
+function sendBooking(){
+  const name = document.getElementById('book-name').value || 'A client';
+  const date = document.getElementById('book-date').value || 'a date to be confirmed';
+  const svcNames = bookingState.services.map(id => CONFIG.services.find(s=>s.id===id)?.name).filter(Boolean).join(', ') || 'a service to be confirmed';
+  const msg = `Hi ${CONFIG.salonName}, I'd like to book:\n\nName: ${name}\nService(s): ${svcNames}\nStylist: ${bookingState.stylist || 'No preference'}\nDate: ${date}\nTime: ${bookingState.time || 'TBC'}\n\nPlease confirm availability.`;
+  window.open(waLink(msg), '_blank');
+}
+
+/* =====================================================================
+   AI assistant — canned guidance out of the box.
+   To wire up a real AI, replace answerLocally() with a fetch() call
+   to a small serverless function that holds your API key server-side.
+   Never put an API key in this file — it is public once deployed.
+===================================================================== */
+const chatLog = document.getElementById('chat-log');
+const chatForm = document.getElementById('chat-form');
+const chatText = document.getElementById('chat-text');
+
+function addMsg(text, who){
+  const m = document.createElement('div');
+  m.className = 'msg ' + who;
+  m.textContent = text;
+  chatLog.appendChild(m);
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+function answerLocally(q){
+  const s = q.toLowerCase();
+  if(s.includes('dark') || s.includes('colour') || s.includes('color')){
+    return "Colour that's come out darker or off-tone usually needs a clarifying treatment rather than another dye job right away. Book a Repair Treatment or message us a photo on WhatsApp and we'll tell you exactly what to book.";
+  }
+  if(s.includes('dry') || s.includes('damag') || s.includes('break')){
+    return "For dry or damaged hair, start with a Repair Treatment and space out colour services. If it's been chemically treated recently, we'd recommend a consultation before your next colour appointment.";
+  }
+  if(s.includes('wedding') || s.includes('event') || s.includes('occasion')){
+    return "For an event, book Occasion Styling and, if you want a trial run, book it 1–2 weeks ahead of the date so we can adjust anything before the day itself.";
+  }
+  if(s.includes('price') || s.includes('cost') || s.includes('how much')){
+    return "All prices are listed in the Services section above — tap 'Book now' and you'll see the price before you confirm anything.";
+  }
+  return "Good question — for anything specific to your hair, it's best to send us a photo on WhatsApp so a stylist can give you a proper answer. Tap the WhatsApp button in the corner any time.";
+}
+
+function askQuick(text){
+  addMsg(text, 'user');
+  setTimeout(() => addMsg(answerLocally(text), 'bot'), 400);
+}
+
+chatForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const val = chatText.value.trim();
+  if(!val) return;
+  addMsg(val, 'user');
+  chatText.value = '';
+  setTimeout(() => addMsg(answerLocally(val), 'bot'), 400);
+});
+
+document.getElementById('book-date').addEventListener('change', updateSummary);
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+</body>
+</html>
