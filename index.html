@@ -23,6 +23,9 @@
     whatsappNumber: "27842200548", // international format, no + or leading 0
     instagramHandle: "@wildflowerbeauty",
     mapEmbedUrl: "https://www.google.com/maps?q=South+Africa&output=embed",
+    bookingUrl: "https://wildflowerbeauty.booksy.com",
+    paymentNote: "No cash payments — card machine only.",
+    afterHoursNote: "After-hours or emergency bookings are available on request at +30% of the booked service price.",
     hours: [
       ["Mon – Fri", "TBC — add your hours"],
       ["Saturday", "TBC — add your hours"],
@@ -318,14 +321,14 @@
       <p>Book an appointment or get instant advice</p>
     </div>
 
-    <button class="cta-card" onclick="openBooking()">
+    <a class="cta-card" id="cta-book-now" target="_blank" rel="noopener">
       <div class="cta-icon">📅</div>
       <div class="cta-text">
         <div class="cta-title">Book Now</div>
-        <div class="cta-sub">Pick a treatment, date & time</div>
+        <div class="cta-sub">Opens the live calendar on Booksy</div>
       </div>
       <div class="cta-arrow">→</div>
-    </button>
+    </a>
 
     <div class="menu-list">
       <button class="menu-row" onclick="showView('services')">
@@ -460,6 +463,9 @@
     <p class="info-line" id="hours-phone"></p>
     <iframe class="map-frame" id="map-frame" loading="lazy"></iframe>
     <a class="directions-btn" id="directions-btn" target="_blank" rel="noopener">Get Directions</a>
+    <a class="directions-btn" id="hours-booksy-btn" target="_blank" rel="noopener" style="margin-top:10px; background:var(--teal); color:#fff;">Book on Booksy</a>
+    <p class="info-line" id="hours-payment-note" style="margin-top:16px;"></p>
+    <p class="info-line" id="hours-afterhours-note"></p>
   </main>
 
 </div>
@@ -543,7 +549,11 @@ document.getElementById('footer-insta-link').href = 'https://instagram.com/' + C
 document.getElementById('hours-address').textContent = CONFIG.address;
 document.getElementById('hours-phone').textContent = CONFIG.phoneDisplay;
 document.getElementById('map-frame').src = CONFIG.mapEmbedUrl;
+document.getElementById('cta-book-now').href = CONFIG.bookingUrl;
 document.getElementById('directions-btn').href = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(CONFIG.address);
+document.getElementById('hours-booksy-btn').href = CONFIG.bookingUrl;
+document.getElementById('hours-payment-note').textContent = CONFIG.paymentNote;
+document.getElementById('hours-afterhours-note').textContent = CONFIG.afterHoursNote;
 
 function waLink(message){
   return `https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`;
@@ -562,9 +572,8 @@ CONFIG.services.forEach(s => {
     </div>
     <div class="svc-right">
       <div class="price">${s.price}</div>
-      <button class="book-btn" type="button">Book</button>
+      <a class="book-btn" href="${CONFIG.bookingUrl}" target="_blank" rel="noopener">Book</a>
     </div>`;
-  row.querySelector('.book-btn').onclick = () => bookService(s.id);
   serviceList.appendChild(row);
 });
 
@@ -748,8 +757,37 @@ function findServiceMatch(q){
   return bestScore >= 2 ? best : null;
 }
 
+function detectBookingIntent(q){
+  return /\bbook\b|\bbooking\b|\bappointment\b|\breserve\b|\bschedule\b/.test(q);
+}
+
 function answerLocally(q){
   const s = q.toLowerCase();
+
+  // Cancellation / rescheduling / policies — must be checked before booking intent,
+  // since "cancel my appointment" contains "appointment" too
+  if(s.includes('cancel') || s.includes('reschedul') || s.includes('policy') || s.includes('policies')){
+    return `Bookings, cancellations and reschedules aren't handled over WhatsApp — please use the live Booksy calendar instead:\n${CONFIG.bookingUrl}`;
+  }
+
+  // Payment
+  if(s.includes('cash') || s.includes('pay') || s.includes('payment') || s.includes('card')){
+    return CONFIG.paymentNote;
+  }
+
+  // After-hours / emergency
+  if(s.includes('after hour') || s.includes('after-hour') || s.includes('emergency') || s.includes('late') || s.includes('urgent')){
+    return CONFIG.afterHoursNote + " Message us on WhatsApp to ask about availability.";
+  }
+
+  // Booking intent — send to the real live calendar, not WhatsApp
+  if(detectBookingIntent(s)){
+    const svc = findServiceMatch(s);
+    if(svc){
+      return `Sure — for ${svc.name}, tap Book Now or use the live calendar here:\n${CONFIG.bookingUrl}`;
+    }
+    return `Sure — tap Book Now, or use the live calendar here:\n${CONFIG.bookingUrl}`;
+  }
 
   // Hours — "open", "close", "hours", "what time"
   if(s.includes('hour') || s.includes('open') || s.includes('close') || (s.includes('what time'))){
@@ -763,7 +801,17 @@ function answerLocally(q){
 
   // Phone / contact
   if(s.includes('phone') || s.includes('number') || s.includes('call you') || s.includes('contact')){
-    return `You can reach us on ${CONFIG.phoneDisplay}, or just message us here on WhatsApp any time.`;
+    return `You can reach us on ${CONFIG.phoneDisplay}. Note: bookings and reschedules go through Booksy, not WhatsApp messages — ${CONFIG.bookingUrl}`;
+  }
+
+  // Who runs the business
+  if(s.includes('owner') || s.includes('who runs') || s.includes('who owns') || s.includes('who is the owner')){
+    return "I don't have the owner's name on file yet — message us on WhatsApp and the team can tell you directly.";
+  }
+
+  // Aftercare
+  if(s.includes('aftercare') || s.includes('after care') || s.includes('after my appointment') || s.includes('after treatment')){
+    return "General aftercare: for lashes, avoid water, steam and oil-based products for the first 24–48 hours, and brush them gently each day. For nails, avoid soaking or heavy impact for the first few hours. The team will give you full details specific to your treatment when you're done.";
   }
 
   // Specific service lookup — "how much is volume lashes", "gel nails price", etc.
@@ -795,21 +843,31 @@ function answerLocally(q){
     return "Refer a friend and you both get R100 off your next appointment. Just have them mention your name when they book — check the Refer & Earn page for details.";
   }
 
-  return "Good question — for anything I can't answer here, it's best to message us on WhatsApp so the team can help directly. Tap the green WhatsApp button any time.";
+  return "I'm not sure about that one yet — message us on WhatsApp and the team can help directly. Tap the green WhatsApp button any time.";
+}
+
+function handleChatMessage(text){
+  addMsg(text, 'user');
+  const reply = answerLocally(text);
+  const wantsBooking = detectBookingIntent(text.toLowerCase());
+  setTimeout(() => {
+    addMsg(reply, 'bot');
+    if(wantsBooking){
+      setTimeout(() => { window.open(CONFIG.bookingUrl, '_blank'); }, 700);
+    }
+  }, 400);
 }
 
 function askQuick(text){
-  addMsg(text, 'user');
-  setTimeout(() => addMsg(answerLocally(text), 'bot'), 400);
+  handleChatMessage(text);
 }
 
 chatForm.addEventListener('submit', e => {
   e.preventDefault();
   const val = chatText.value.trim();
   if(!val) return;
-  addMsg(val, 'user');
   chatText.value = '';
-  setTimeout(() => addMsg(answerLocally(val), 'bot'), 400);
+  handleChatMessage(val);
 });
 </script>
 
