@@ -249,7 +249,7 @@
   /* AI chat */
   .chat-shell{ border:1px solid var(--line); border-radius:14px; background: var(--panel); overflow:hidden; }
   .chat-log{ height:320px; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; }
-  .msg{ font-size:0.88rem; line-height:1.5; max-width:82%; padding:10px 14px; border-radius:12px; }
+  .msg{ font-size:0.88rem; line-height:1.5; max-width:82%; padding:10px 14px; border-radius:12px; white-space:pre-line; }
   .msg.bot{ background: var(--bg); align-self:flex-start; border-bottom-left-radius:2px; color: var(--ink); }
   .msg.user{ background: var(--wine); color:#fff; align-self:flex-end; border-bottom-right-radius:2px; }
   .chat-quick{ display:flex; gap:8px; flex-wrap:wrap; padding:0 16px 12px; }
@@ -728,8 +728,60 @@ function addMsg(text, who){
   chatLog.scrollTop = chatLog.scrollHeight;
 }
 
+function formatHours(){
+  return CONFIG.hours.map(([d,h]) => `${d}: ${h}`).join('\n');
+}
+
+function formatServiceList(){
+  return CONFIG.services.map(s => `${s.name} — ${s.price} (${s.duration})`).join('\n');
+}
+
+function findServiceMatch(q){
+  let best = null, bestScore = 0;
+  CONFIG.services.forEach(svc => {
+    const words = svc.name.toLowerCase().split(' ').filter(w => w.length >= 3);
+    let score = 0;
+    words.forEach(w => { if(q.includes(w)) score++; });
+    if(words.length && q.includes(words[0])) score += 2; // bonus for the distinctive first word
+    if(score > bestScore){ bestScore = score; best = svc; }
+  });
+  return bestScore >= 2 ? best : null;
+}
+
 function answerLocally(q){
   const s = q.toLowerCase();
+
+  // Hours — "open", "close", "hours", "what time"
+  if(s.includes('hour') || s.includes('open') || s.includes('close') || (s.includes('what time'))){
+    return `Our hours:\n${formatHours()}`;
+  }
+
+  // Location — address, where are you, directions
+  if(s.includes('address') || s.includes('where are you') || s.includes('location') || s.includes('located') || s.includes('find you') || s.includes('directions')){
+    return `We're at:\n${CONFIG.address}\n\nTap Hours & Location on the home screen for a map and directions.`;
+  }
+
+  // Phone / contact
+  if(s.includes('phone') || s.includes('number') || s.includes('call you') || s.includes('contact')){
+    return `You can reach us on ${CONFIG.phoneDisplay}, or just message us here on WhatsApp any time.`;
+  }
+
+  // Specific service lookup — "how much is volume lashes", "gel nails price", etc.
+  const matchedService = findServiceMatch(s);
+  if(matchedService){
+    return `${matchedService.name}: ${matchedService.price}, takes about ${matchedService.duration}. Tap Book Now to reserve it.`;
+  }
+
+  // Full services / price list
+  if(s.includes('service') || s.includes('menu') || s.includes('price list') || s.includes('what do you offer') || s.includes('treatments')){
+    return `Here's the full list:\n${formatServiceList()}\n\nNote: these are placeholder estimates until the studio confirms real prices with me. Tap Book Now to reserve any of these.`;
+  }
+
+  if(s.includes('price') || s.includes('cost') || s.includes('how much')){
+    return `All prices are listed under Services & Pricing. Note: this studio hasn't confirmed its real prices with me yet, so those are placeholder estimates until the owner updates them.\n\n${formatServiceList()}`;
+  }
+
+  // Curated advice — not raw data, genuinely helpful guidance
   if(s.includes('lash') && (s.includes('style') || s.includes('which') || s.includes('choose'))){
     return "Classic gives a natural, mascara-like look. Hybrid mixes classic and volume for texture without being too dramatic. Volume is the fullest, boldest option. If you're unsure, hybrid is the most popular middle ground.";
   }
@@ -742,10 +794,8 @@ function answerLocally(q){
   if(s.includes('refer')){
     return "Refer a friend and you both get R100 off your next appointment. Just have them mention your name when they book — check the Refer & Earn page for details.";
   }
-  if(s.includes('price') || s.includes('cost') || s.includes('how much')){
-    return "All prices are listed under Services & Pricing. Note: this studio hasn't confirmed its real prices with me yet, so those are placeholder estimates until the owner updates them.";
-  }
-  return "Good question — for anything specific to your booking, it's best to message us on WhatsApp so the team can give you a proper answer. Tap the green WhatsApp button any time.";
+
+  return "Good question — for anything I can't answer here, it's best to message us on WhatsApp so the team can help directly. Tap the green WhatsApp button any time.";
 }
 
 function askQuick(text){
